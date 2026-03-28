@@ -1,0 +1,6 @@
+.env
+*.log
+.n8n
+postgres_data
+ollama_data
+node_modules

@@ -1,0 +1,79 @@
+{
+  "name": "Telegram to Ollama to Telegram",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "parameters": {
+        "triggerOn": "message",
+        "messageTypes": ["text"],
+        "webhookId": "auto"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "7146386009",
+          "name": "khalid1976_bot"
+        }
+      }
+    },
+    {
+      "id": "2",
+      "name": "Ollama Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 2,
+      "position": [550, 300],
+      "parameters": {
+        "method": "POST",
+        "url": "http://ollama:11434/api/generate",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "{\"model\":\"llama2\",\"prompt\":\"{{$json[\\\"message\\\"][\\\"text\\\"]}}\"}"
+      }
+    },
+    {
+      "id": "3",
+      "name": "Telegram Send Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "parameters": {
+        "chatId": "={{$json[\"message\"][\"chat\"][\"id\"]}}",
+        "text": "={{$json[\"response\"][\"response\"] || \"Keine Antwort von Ollama\"}}"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "7146386009",
+          "name": "khalid1976_bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "1": {
+      "main": [
+        [
+          {
+            "node": "2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2": {
+      "main": [
+        [
+          {
+            "node": "3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true
+}

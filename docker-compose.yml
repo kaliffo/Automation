@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: n8n_postgres
+    restart: always
+    environment:
+      POSTGRES_USER_EMAIL: n8n@gmail.com
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8npassword
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ai_network
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n_new
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_AI_ENABLED=true
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_USER_EMAIL=n8n@gmail.com
+      - DB_POSTGRESDB_PASSWORD=n8npassword
+      - N8N_HOST=abc123.ngrok-free.app
+      - N8N_PROTOCOL=https
+      - N8N_PORT=5678
+      - WEBHOOK_URL=https://overinstructive-karyn-curdy.ngrok-free.dev/
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+    networks:
+      - ai_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: always
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - ai_network
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok_new
+    restart: always
+    command: start --all --config /etc/ngrok.yml
+    volumes:
+        - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+        - "4040:4040"
+    depends_on:
+        - n8n
+    networks:
+        - ai_network
+
+volumes:
+  postgres_data:
+  n8n_data:
+  ollama_data:
+
+networks:
+  ai_network:
+    driver: bridge
