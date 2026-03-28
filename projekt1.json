@@ -14,8 +14,8 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "7146386009",
-          "name": "khalid1976_bot"
+          "id": "your-chatbot-id",
+          "name": "your-chatbot-name_bot"
         }
       }
     },
@@ -45,8 +45,8 @@
       },
       "credentials": {
         "telegramApi": {
-          "id": "7146386009",
-          "name": "khalid1976_bot"
+          "id": "your-chatbot-id",
+          "name": "your-chatbot-name_bot"
         }
       }
     }
